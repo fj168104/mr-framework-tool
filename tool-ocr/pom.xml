@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<packaging>jar</packaging>
+	
+	<parent>
+		<groupId>com.mr.framework</groupId>
+		<artifactId>tool-parent</artifactId>
+		<version>0.0.1</version>
+	</parent>
+
+	<artifactId>tool-ocr</artifactId>
+	<name>${project.artifactId}</name>
+	<description>tool ocr图像识别</description>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.mr.framework</groupId>
+			<artifactId>tool-core</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bytedeco.javacpp-presets</groupId>
+			<artifactId>tesseract</artifactId>
+			<version>3.03-rc1-0.11</version>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/nu.pattern/opencv -->
+		<dependency>
+			<groupId>nu.pattern</groupId>
+			<artifactId>opencv</artifactId>
+			<version>2.4.9-4</version>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.github.jai-imageio/jai-imageio-core -->
+		<dependency>
+			<groupId>com.github.lafa.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>1.0.1</version>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+
+	</dependencies>
+</project>
