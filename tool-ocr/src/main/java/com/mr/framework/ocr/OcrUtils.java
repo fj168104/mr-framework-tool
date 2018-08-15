@@ -1,6 +1,7 @@
 package com.mr.framework.ocr;
 
 import com.mr.framework.core.io.FileUtil;
+import com.mr.framework.core.lang.Console;
 import com.mr.framework.core.util.StrUtil;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -45,7 +46,6 @@ public class OcrUtils {
 		return recognizeTexts(image2Dir(fileName));
 	}
 
-
 	/**
 	 * 解析的dirName下的所有图片
 	 * dirName  目录名 = 下载的文件所在目录 + 文件名
@@ -68,6 +68,7 @@ public class OcrUtils {
 		}
 		//删除文件夹 dirName
 		FileUtil.del(dirName);
+
 		return sbs.toString();
 	}
 
@@ -106,13 +107,13 @@ public class OcrUtils {
 		StringBuffer strB = new StringBuffer();
 		List<String> cmd = new ArrayList<String>();//数组各个位置存放东西，如[tesseract.exe的路径，识别的图像，输出文件名，命令选项-l，语言选择]
 
-		if(System.getProperty("os.name").toLowerCase().startsWith("win")){
+		if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
 			cmd.add(tesseractPath + "\\tesseract");
-		}else{
+		} else {
 			cmd.add("tesseract");
 		}
 
-			cmd.add("");
+		cmd.add("");
 		cmd.add(outputfile.getName());
 		cmd.add(LANG_OPTION);
 		cmd.add("chi_sim");
@@ -168,17 +169,36 @@ public class OcrUtils {
 	 * @return
 	 */
 	public String image2Dir(String fileName) {
+		return image2Dir(fileName, true);
+	}
+
+	/**
+	 * @param fileName 下载的文件名,不是全路径名
+	 *                 将文件移到文件夹内，并改名.
+	 * @return
+	 */
+	public String image2Dir(String fileName, boolean needDelete) {
 		String entirePathName = downloadDir + File.separator + fileName;
 		String dirs[] = fileName.split("\\.");
 		File dirFile = new File(downloadDir + File.separator + dirs[0]);
 
 		FileUtil.mkdir(dirFile);
 		if (dirs[1].equalsIgnoreCase("pdf")) {
-			renameTo(entirePathName, dirFile + File.separator + fileName);
-			pdf2image(dirFile + File.separator + fileName);
+			if (needDelete) {
+				renameTo(entirePathName, dirFile + File.separator + fileName);
+				pdf2image(dirFile + File.separator + fileName);
+			} else {
+				FileUtil.copy(entirePathName, dirFile + File.separator + fileName, true);
+				pdf2image(dirFile + File.separator + fileName);
+			}
 		} else {
-			renameTo(entirePathName, dirFile + File.separator + "0." + dirs[1]);
+			if (needDelete) {
+				renameTo(entirePathName, dirFile + File.separator + "0." + dirs[1]);
+			} else {
+				FileUtil.copy(entirePathName, dirFile + File.separator + "0." + dirs[1], true);
+			}
 		}
+
 		return dirFile.getAbsolutePath();
 	}
 
@@ -187,7 +207,18 @@ public class OcrUtils {
 	 *
 	 * @param pdfName
 	 */
+
 	public void pdf2image(String pdfName) {
+		pdf2image(pdfName, true);
+	}
+
+	/**
+	 * 将pdf转化为png格式的image
+	 *
+	 * @param needDelete 是否需要删除原pdf文件
+	 * @param pdfName
+	 */
+	public void pdf2image(String pdfName, boolean needDelete) {
 		File file = new File(pdfName);
 		try {
 			PDDocument doc = PDDocument.load(file);
@@ -200,7 +231,9 @@ public class OcrUtils {
 				// BufferedImage image = renderer.renderImage(i, 2.5f);
 				ImageIO.write(image, "PNG", new File(file.getParentFile(), i + ".png"));
 			}
-			file.delete();
+			if (needDelete) {
+				file.delete();
+			}
 			doc.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -276,8 +309,10 @@ public class OcrUtils {
 	}
 
 	public static void main(String[] s) throws Exception {
-		OcrUtils ocrUtils = new OcrUtils("/home/fengjiang/Documents");
-		System.out.println(ocrUtils.getTextFromImg("P020180302563551437859.pdf"));
+		OcrUtils ocrUtils = new OcrUtils("/home/fengjiang/Downloads");
+		Console.log(ocrUtils.image2Dir("2018016.pdf", false));
+
+//		System.out.println(ocrUtils.getTextFromImg("2055556191-3.jpg"));
 
 //		ocrUtils.pdf2image("/home/fengjiang/Documents/P020180302563551437859.pdf");
 	}
